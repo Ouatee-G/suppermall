@@ -48,7 +48,7 @@ export default {
     setTimeout(() => {
       this.handleDom();
       //2.开启定时器
-      this.setTimeout();
+      this.startTimer();
     },100)
   },
    //添加一些方法
