@@ -76,7 +76,7 @@ export default {
       //判断滚动到的位置
       this.checkPosition();
       //滚动完成
-      this.scrolling = true;
+      this.scrolling = false;
     },
 
     //检查正确的位置
@@ -86,10 +86,10 @@ export default {
         this.swiperStyle.transition = '0ms';
         if(this.currentIndex >= this.slideCount + 1){
           this.currentIndex = 1;
-          this.setTransform(-this.currentPosition * this.totaWidth);
+          this.setTransform(-this.currentIndex * this.totaWidth);
         }else if(this.currentIndex <= 0){
           this.currentIndex = this.slideCount;
-          this.setTransform(-this.currentPosition * this.totaWidth);
+          this.setTransform(-this.currentIndex * this.totaWidth);
         }
         //结束移动后的回调
         this.$emit('transitionEnd',this.currentIndex - 1);
@@ -136,7 +136,7 @@ export default {
         //计算出用户拖动的距离
         this.currentX = e.touches[0].pageX;  //获取当前事件对象的pageX
         this.distance = this.currentX - this.startX;    //计算出距离
-        let currentPosition = this.currentIndex * this.totalWidth;
+        let currentPosition = -this.currentIndex * this.totalWidth;
         let moveDistance = this.distance + currentPosition;
         //设置当前的位置
         this.setTransform(moveDistance);
@@ -148,9 +148,9 @@ export default {
         if(this.distance === 0){
           return
         }else if(this.distance > 0 && currentMove > this.totalWidth * this.moveRatio){
-          this.currentIndex --
+          this.currentIndex--
         }else if(this.distance < 0 && currentMove > this.totalWidth * this.moveRatio){
-          this.currentIndex ++
+          this.currentIndex++
         }
         //移动到正确的位置
         this.scrollContent(-this.currentIndex * this.totalWidth);
@@ -165,7 +165,7 @@ export default {
       next:function () {
         this.changeItem(1);
       },
-      changeItem:function () {
+      changeItem:function (num) {
 
         //移除定时器
         this.stopTimer();
