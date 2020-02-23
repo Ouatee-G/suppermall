@@ -3,7 +3,7 @@
     <div class="swiper" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
       <slot></slot>
     </div>
-    <slot class="indicator">
+    <slot name="indicator">
     </slot>
     <div class="indicator">
       <slot name="indicator" v-if="showIndicator && slideCount>1">
@@ -49,7 +49,7 @@ export default {
       this.handleDom();
       //2.开启定时器
       this.startTimer();
-    },100)
+    },300)
   },
    //添加一些方法
   methods: {

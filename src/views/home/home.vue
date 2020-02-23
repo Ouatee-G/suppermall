@@ -28,8 +28,6 @@ export default {
     return {
       banners:[],
       recommends:[],
-      dKeywords:[],
-      Keywordss:[],
     }
   },
   created(){
