@@ -34,8 +34,8 @@ export default {
   flex: 1;
 }
 .recommends-item img{
-  width: 80px;
-  height: 80px;
+  width: 75px;
+  height: 75px;
   margin-bottom: 10px
 }
 </style>
