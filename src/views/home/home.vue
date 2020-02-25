@@ -1,10 +1,15 @@
 <template>
 <div id="home">
   <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-  <home-swiper :banners = "banners"/>
-  <recommend-view :recommends = "recommends"/>
-  <feature-view></feature-view>
-  <tab-control class="tab-control" :titles = "['流行','新款','精选']"/>
+    <scroll class="content">
+      <home-swiper :banners = "banners"/>
+      <recommend-view :recommends = "recommends"/>
+      <feature-view></feature-view>
+      <tab-control class="tab-control"
+                    :titles = "['流行','新款','精选']"
+                     @tabClick = "tabClick"/>
+      <goods-list :goods = "showGoods"/>
+    </scroll>
 </div>
 </template>
 
@@ -17,6 +22,8 @@ import FeatureView from './childComps/FeatuerView'
 
 import NavBar from 'components/common/navbar/NavBar'
 import TabControl from 'components/content/tabcontrol/TabControl'
+import GoodsList from 'components/content/goods/GoodsList'
+import Scroll from 'components/common/scroll/Scroll'
 
 
 import {getHomeMultidata,getHomeGoods} from 'network/Home'
@@ -29,6 +36,8 @@ export default {
     FeatureView,
     NavBar,
     TabControl,
+    GoodsList,
+    Scroll,
   },
   data() {
     return {
@@ -38,11 +47,16 @@ export default {
         'pop':{page:0, list:[]},
         'new':{page:0, list:[]},
         'sell':{page:0, list:[]},
-      }
+      },
+      currentType:'pop'
+    }
+  },
+  computed: {
+    showGoods () {
+      return this.goods[this.currentType].list
     }
   },
   created(){
-
     this.getHomeMultidata(),
 
     this.getHomeGoods('pop')
@@ -50,6 +64,26 @@ export default {
     this.getHomeGoods('sell')
   },
   methods: {
+    /**
+     * 事件监听的方法
+    */
+    tabClick(index){
+      switch(index){
+        case 0:
+          this.currentType = 'pop'
+          break
+        case 1:
+          this.currentType = 'new'
+          break
+        case 2:
+          this.currentType = 'sell'
+          break
+      }
+    },
+
+    /**
+     * 网络请求的方法
+    */
     getHomeMultidata(){
       getHomeMultidata().then(res => {
         this.banners = res.data.banner.list
@@ -67,7 +101,7 @@ export default {
 }
 </script>
 
-<style>
+<style scpope>
 #home{
   padding-top: 44px;
 }
@@ -83,5 +117,6 @@ export default {
 .tab-control{
   position: sticky;
   top: 44px;
+  z-index: 10;
 }
 </style>
