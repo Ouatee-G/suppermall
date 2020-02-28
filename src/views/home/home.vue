@@ -1,7 +1,12 @@
 <template>
 <div id="home">
   <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-    <scroll class="content" ref="scroll">
+    <scroll class="content"
+            ref="scroll"
+            :probe-type="3"
+            @scroll="contentScroll"
+            :pull-up-load="true"
+            @pullingUp="loadMore">
       <home-swiper :banners = "banners"/>
       <recommend-view :recommends = "recommends"/>
       <feature-view></feature-view>
@@ -10,7 +15,7 @@
                      @tabClick = "tabClick"/>
       <goods-list :goods = "showGoods"/>
     </scroll>
-    <back-top @click.native = "backClick"/>
+    <back-top @click.native = "backClick" v-show="isShowBackTop"/>
 </div>
 </template>
 
@@ -51,7 +56,8 @@ export default {
         'new':{page:0, list:[]},
         'sell':{page:0, list:[]},
       },
-      currentType:'pop'
+      currentType:'pop',
+      isShowBackTop:false,
     }
   },
   computed: {
@@ -65,6 +71,11 @@ export default {
     this.getHomeGoods('pop')
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
+  },
+  mounted() {
+    this.$bus.$on('itemImageLoad',() => {
+      this.$refs.scroll.refresh()
+    })
   },
   methods: {
     /**
@@ -86,6 +97,12 @@ export default {
     backClick(){
       this.$refs.scroll.scrollTo(0,0)
     },
+    contentScroll(position){
+      this.isShowBackTop = (-position.y > 1000 )
+    },
+    loadMore(){
+      this.getHomeGoods(this.currentType)
+    },
     /**
      * 网络请求的方法
     */
@@ -100,6 +117,7 @@ export default {
       getHomeGoods(type,page).then(res =>{
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page += 1
+        this.$refs.scroll.finishPullUp()
       })
     }
   },
