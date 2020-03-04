@@ -8,8 +8,8 @@
                   v-show="isTabFixed"/>
     <scroll class="content"
             ref="scroll"
-            :probe-type="3"
             @scroll="contentScroll"
+            :probe-type="3"
             :pull-up-load="true"
             @pullingUp="loadMore">
       <home-swiper :banners = "banners" @swiperImageLoad="swiperImageLoad"/>
@@ -65,7 +65,8 @@ export default {
       currentType:'pop',
       isShowBackTop:false,
       tabOffsetTop: 0,
-      isTabFixed: false
+      isTabFixed: false,
+      saveY: 0
     }
   },
   computed: {
@@ -74,8 +75,10 @@ export default {
     }
   },
   activated() {
-    this.$refs.scroll.scrollTo(0,this.saveY,0)
-    this.$refs.scroll.refresh()
+    this.$nextTick(() => {
+      this.$refs.scroll.scrollTo(0, this.saveY, 0)
+      this.$refs.scroll.refresh()
+    })
   },
   deactivated() {
     this.saveY = this.$refs.scroll.getScrollY()
@@ -86,7 +89,6 @@ export default {
     this.getHomeGoods('pop')
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
-
   },
   mounted() {
     const refresh = debounce(this.$refs.scroll.refresh,100)
