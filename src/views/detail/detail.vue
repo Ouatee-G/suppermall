@@ -1,13 +1,16 @@
 <template>
   <div class="detail">
-    <detail-nav-bar class="detail-nav"/>
+    <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
     <scroll class="content" ref="scroll">
       <detail-swiper :top-images = "topImages"/>
       <detail-base-info :goods="goods"/>
       <detail-shop-info :shop="shop"/>
       <detail-goods-info :detail-info="detailInfo"
-                          @imgLoad="imgLoad"/>
-      <detail-param-info :parm-info="paramInfo"/>
+                          @imgLoad="imgLoad"
+                          class="recommends"/>
+      <detail-param-info ref="param" :param-info="paramInfo"/>
+      <detail-comment-info ref="comment" :comment-info="commentInfo"/>
+      <goods-list ref="recommends" :goods="recommends"/>
     </scroll>
   </div>
 </template>
@@ -19,10 +22,13 @@
   import DetailShopInfo from './childComps/DetailShopInfo'
   import DetailGoodsInfo from './childComps/DetailGoodsInfo'
   import DetailParamInfo from './childComps/DetailParamInfo'
+  import DetailCommentInfo from './childComps/DetailCommentInfo'
 
   import Scroll from 'components/common/scroll/Scroll'
+  import GoodsList from 'components/content/goods/GoodsList'
 
-  import {getDetail, Goods, Shop, GoodsParam} from 'network/detail'
+  import {getDetail, Goods, Shop, GoodsParam,getRecommend} from 'network/detail'
+
   export default {
     name: "Detail",
     components:{
@@ -32,7 +38,9 @@
       DetailShopInfo,
       DetailGoodsInfo,
       DetailParamInfo,
+      DetailCommentInfo,
       Scroll,
+      GoodsList,
     },
     data() {
       return {
@@ -42,6 +50,10 @@
         shop: {},
         detailInfo: {},
         paramInfo: {},
+        commentInfo: {},
+        recommends: [],
+        themeTopYs: [],
+        getThemeTopY: null
       }
     },
     created() {
@@ -63,11 +75,32 @@
 
         //获取商品参数信息
         this.paramInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule)
+
+        //获取用户评价{
+        if(data.rate.cRate !== 0){
+          this.commentInfo = data.rate.list[0]
+        }
       })
+        //获取推荐数据
+      getRecommend().then(res => {
+        this.recommends = res.data.list
+      })
+
+      this.getThemeTopY = debouce(() => {
+        this.themeTopYs = []
+        this.themeTopYs.push(0)
+        this.themeTopYs.push(this.$refs.param.$el.offsetTop)
+        this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
+        this.themeTopYs.push(this.$refs.recommends.$el.offsetTop)
+      },100)
     },
     methods: {
       imgLoad(){
         this.$refs.scroll.refresh()
+        this.getThemeTopY()
+      },
+      titleClick(index){
+        this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],200)
       }
     },
   }
@@ -87,5 +120,8 @@
 }
 .content{
   height: calc(100% - 44px);
+}
+.recommends{
+  position: relative;
 }
 </style>

@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     imgLoad(){
-      if(++this.content === this.imagesLength){
+      if(++this.counter === this.imagesLength){
         this.$emit('imgLoad');
       }
     }
