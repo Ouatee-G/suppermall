@@ -38,6 +38,8 @@
   import {getDetail, Goods, Shop, GoodsParam,getRecommend} from 'network/detail'
   import {backTopMiXin} from 'common/mixin'
 
+  import {mapActions} from 'vuex'
+
   export default {
     name: "Detail",
     components:{
@@ -109,6 +111,9 @@
       },100)
     },
     methods: {
+      ...mapActions(
+        ['addCart']
+        ),
       imgLoad(){
         this.$refs.scroll.refresh()
         this.getThemeTopY()
@@ -142,7 +147,8 @@
         product.iid = this.iid
 
         //将商品添加到购物车中
-        this.$store.dispatch('addCart',product)
+        //this.$store.dispatch('addCart',product).then(res => { })
+        this.addCart(product).then(res => {console.log(res)})
       }
     },
   }
