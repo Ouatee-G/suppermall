@@ -4,7 +4,7 @@
                    class="select-all"
                    @click.native="checkClick"/>
     <span>全选</span>
-    <span class="total-price">合计{{totalPrice}}</span>
+    <span class="total-price">合计：￥{{totalPrice}}</span>
     <span class="buy-product">结算({{checkLength}})</span>
   </div>
 </template>
@@ -21,10 +21,11 @@ export default {
   computed: {
     ...mapGetters(['cartList']),
     totalPrice(){
-      return '￥' + this.cartList.filter(item => {
+      return this.cartList.filter(item => {
+        console.log(item)
         return item.checked
       }).reduce((preValue,item) => {
-        return preValue + item.count * item.price
+        return preValue + item.count * parseFloat(item.price.substr(1))
       },0).toFixed(2)
     },
     checkLength(){
@@ -53,7 +54,7 @@ export default {
         this.cartList.forEach(item => item.checked = true)
       }
     }
-  }
+  },
 }
 </script>
 
